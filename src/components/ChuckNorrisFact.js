@@ -1,39 +1,31 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import "./ChuckNorrisFact.css";
 
-export default class ChuckNorrisFact extends Component {
-  state = {
-    chuckNorrisFact: {},
-    className: ""
+function ChuckNorrisFact() {
+  const [chuckNorrisFact, setChuckNorrisFact] = useState({});
+  const [animate, setAnimate] = useState("");
+
+  const fetchData = async () => {
+    setAnimate("");
+    const resp = await fetch("https://api.chucknorris.io/jokes/random");
+    const json = await resp.json();
+    setChuckNorrisFact(json);
+    setAnimate("animated bounceIn");
   };
 
-  componentDidMount() {
-    this.fetchChuckNorrisFact();
-  }
+  useEffect(() => {
+    fetchData();
+  }, []);
 
-  fetchChuckNorrisFact = () => {
-    this.setState({ className: "" });
-    fetch("https://api.chucknorris.io/jokes/random")
-      .then(response => response.json())
-      .then(json => {
-        console.log(json);
-        this.setState({ chuckNorrisFact: json });
-        this.setState({ className: "animated bounceIn" });
-      });
-  };
-
-  render() {
-    return (
-      <div className="helloWorld">
-        <h2 className={this.state.className}>
-          {this.state.chuckNorrisFact.value}
-        </h2>
-        <img src={this.state.chuckNorrisFact.icon_url} />
-        <br />
-        <button className="myButton" onClick={this.fetchChuckNorrisFact}>
-          Give me another Chuck Norris fact
-        </button>
-      </div>
-    );
-  }
+  return (
+    <div className="helloWorld">
+      <div className={animate}>{chuckNorrisFact.value}</div> <br />
+      <img src={chuckNorrisFact.icon_url} /> <br />
+      <button onClick={fetchData} className="myButton">
+        Bring me another Chuck Norris fact!
+      </button>
+    </div>
+  );
 }
+
+export default ChuckNorrisFact;
